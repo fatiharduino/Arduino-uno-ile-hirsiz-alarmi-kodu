@@ -1,0 +1,47 @@
+// Pin tanımlamaları
+const int hareketSensorPin = 2;  // Hareket sensörü D2'ye bağlı
+const int buzzerPin = 3;         // Buzzer D3'e bağlı
+const int ledPin = 4;            // LED D4'e bağlı
+
+// Alarm durumu
+bool alarmAktif = false;
+
+void setup() {
+  pinMode(hareketSensorPin, INPUT);  // Hareket sensörü giriş
+  pinMode(buzzerPin, OUTPUT);       // Buzzer çıkış
+  pinMode(ledPin, OUTPUT);          // LED çıkış
+  
+  Serial.begin(9600);
+  Serial.println("Hirsiz Alarmi Sistemi Baslatildi");
+}
+
+void loop() {
+  // Hareket sensöründen veri oku
+  int hareketVar = digitalRead(hareketSensorPin);
+  
+  if (hareketVar == HIGH) {
+    // Hareket algılandı
+    if (!alarmAktif) {
+      alarmAktif = true;
+      Serial.println("Hareket Algilandi! Alarm Caliyor!");
+    }
+    
+    // Alarmı çal
+    digitalWrite(ledPin, HIGH);     // LED'i yak
+    tone(buzzerPin, 1000);          // 1000Hz ses çıkar
+    delay(100);                     // Kısa bekleme
+    digitalWrite(ledPin, LOW);      // LED'i söndür
+    noTone(buzzerPin);              // Sesi kes
+    delay(100);                     // Kısa bekleme
+  } else {
+    // Hareket yok
+    if (alarmAktif) {
+      alarmAktif = false;
+      Serial.println("Alarm Durduruldu");
+    }
+    
+    // Alarmı durdur
+    digitalWrite(ledPin, LOW);
+    noTone(buzzerPin);
+  }
+}
